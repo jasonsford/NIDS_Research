@@ -1,6 +1,6 @@
 # feature_extraction.py
 # This script is part of a cybersecurity toolkit aimed at automating the detection of network-based threats. 
-# It extracts features from PCAP (Packet Capture) files, which are used for training and evaluating an network intrustion detection ML models.
+# It extracts features from PCAP (Packet Capture) files, which are used for training and evaluating network intrustion detection ML models.
 # github.com/jasonsford
 # 16 February 2025
 # v0.18
