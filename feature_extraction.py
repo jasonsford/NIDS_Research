@@ -1,16 +1,17 @@
 # feature_extraction.py
 # This script is part of a cybersecurity toolkit aimed at automating the detection of network-based threats. 
-# It extracts features from PCAP (Packet Capture) files, which are used for training and evaluating network intrusion detection ML models.
+# It extracts features from PCAP (Packet Capture) files, which are used for training and evaluating an network intrustion detection ML models.
+# 
 # github.com/jasonsford
-# 16 February 2025
-# v0.18
+# 19 February 2026
+# v0.29
 
 from scapy.all import PcapReader, TCP, IP
 import numpy as np
 from collections import defaultdict, deque
 
-FIXED_FEATURE_LENGTH = 1000  # Define the length of the final feature vector
-TIME_WINDOW = 10  # Define the time window (in seconds) for time-based features
+FIXED_FEATURE_LENGTH = 49  # Define the length of the final feature vector
+TIME_WINDOW = 60  # Define the time window (in seconds) for time-based features
 
 def update_flow_duration(flow, current_time):
 
@@ -30,8 +31,17 @@ def extract_flow_features(packet, flow_features):
     try:
         current_time = packet.time  # Use packet's timestamp
 
-        # Use a generic flow key (e.g., based on protocol) to prevent bias from IP addresses/ports
-        flow_key = 'generic_flow'
+        # Build the flow based on source and destination IP address and port
+        if IP in packet:
+            proto = packet[IP].proto
+            src = packet[IP].src
+            dst = packet[IP].dst
+            sport = packet[TCP].sport if TCP in packet else getattr(packet, "sport", 0)
+            dport = packet[TCP].dport if TCP in packet else getattr(packet, "dport", 0)
+            flow_key = f"{src}-{dst}-{sport}-{dport}-{proto}"
+        else:
+            return
+
 
         # Initialize flow if not present
         if flow_key not in flow_features:
